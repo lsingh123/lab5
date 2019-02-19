@@ -145,8 +145,8 @@ exception Invalid_color of string ;;
 let validated_rgb (col : color) : color =
   let range (x : int) : bool = x >= 0 && x <= 255 in
   match col with
-  |Simple color_label -> col
-  |RGB (r, g, b) -> if range r && range g && range b then col
+  | Simple color_label -> col
+  | RGB (r, g, b) -> if range r && range g && range b then col
                     else raise (Invalid_color "RGB out of range") ;;
 
 (*......................................................................
@@ -175,15 +175,15 @@ below are some other values you might find helpful.
 
 let convert_to_rgb (col : color) : int * int * int =
   match col with
-  |Simple Orange -> 255, 165, 0
-  |Simple Yellow -> 255, 255, 0
-  |Simple Indigo -> 75, 0, 130
-  |Simple Violet -> 240, 310, 240
-  |Simple Red -> 255, 0, 0
-  |Simple Crimson -> 164, 16, 32
-  |Simple Green -> 0, 64, 0
-  |Simple Blue -> 0, 255, 255
-  |RGB (r, g, b) -> r, g, b ;;
+  | Simple Orange -> 255, 165, 0
+  | Simple Yellow -> 255, 255, 0
+  | Simple Indigo -> 75, 0, 130
+  | Simple Violet -> 240, 310, 240
+  | Simple Red -> 255, 0, 0
+  | Simple Crimson -> 164, 16, 32
+  | Simple Green -> 0, 64, 0
+  | Simple Blue -> 0, 255, 255
+  | RGB (r, g, b) -> r, g, b ;;
 
 (*======================================================================
 Part 2: Dates as a record type
@@ -208,7 +208,7 @@ should be. Then, consider the implications of representing the overall
 data type as a tuple or a record.
 ......................................................................*)
 
-type date = NotImplemented ;;
+type date = { month : int; day : int; year : int} ;;
 
 (* After you've thought it through, look up the Date module in the
 OCaml documentation to see how this was implemented there. If you
@@ -250,8 +250,24 @@ the invariant is violated, and returns the date if valid.
 
 exception Invalid_date of string ;;
 
-let validated_date =
-  fun _ -> failwith "validated_date not implemented" ;;
+let validated_date ({month; day; year} as d : date) : date =
+  let check_leap y = (if not (y mod 4 = 0) then false
+                    else if not (y mod 100 = 0) then true
+                    else if not (y mod 400 = 0) then false
+         else true) in
+  if year <= 0 then raise (Invalid_date "non-positive year")
+  else if month > 12 || month < 0 then raise (Invalid_date "month out of range")
+  else if day <= 0 then raise (Invalid_date "non-positive day")
+  else match month with
+    | 1 | 3 | 5 | 7 | 8 | 10 | 12 -> if day <= 31 then d
+      else raise (Invalid_date "too many days")
+    | 4 | 6 | 9 | 11 -> if day <= 30 then d
+      else raise (Invalid_date "too many days")
+    | 2 -> if check_leap year && day <= 29 then d
+      else if not (check_leap year && day <= 28) then d
+      else raise (Invalid_date "too many days")
+    |_ -> raise (Invalid_date "invalid date") ;;
+
 
 (*======================================================================
 Part 3: Family trees as an algebraic data type
