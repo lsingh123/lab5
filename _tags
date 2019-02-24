@@ -1,3 +1,3 @@
-<AsnLib> or <Lib>: include
-<_build>: include
+<AsnLib> or <Lib>: include '-package batteries'
+<_build>: include '-package batteries'
 <**/*>        : thread, strict-sequence, warn(A-4-33-40-41-42-43-34-44)
