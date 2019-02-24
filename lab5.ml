@@ -178,15 +178,17 @@ below are some other values you might find helpful.
 
 let convert_to_rgb (col : color) : int * int * int =
   match col with
-  | Simple Orange -> 255, 165, 0
-  | Simple Yellow -> 255, 255, 0
-  | Simple Indigo -> 75, 0, 130
-  | Simple Violet -> 240, 310, 240
-  | Simple Red -> 255, 0, 0
-  | Simple Crimson -> 164, 16, 32
-  | Simple Green -> 0, 64, 0
-  | Simple Blue -> 0, 255, 255
-  | RGB (r, g, b) -> r, g, b ;;
+  | RGB (r, g, b) -> (r, g, b)
+  | Simple c ->
+    match c with
+    | Red ->     (255,   0,   0)
+    | Crimson -> (164,  16,  52)
+    | Orange ->  (255, 165,   0)
+    | Yellow ->  (255, 255,   0)
+    | Green ->   (  0, 255,   0)
+    | Blue ->    (  0,   0, 255)
+    | Indigo ->  ( 75,   0, 130)
+    | Violet ->  (240, 130, 240)  ;;
 
 (*======================================================================
 Part 2: Dates as a record type
@@ -254,11 +256,9 @@ the invariant is violated, and returns the date if valid.
 exception Invalid_date of string ;;
 
 let validated_date ({month; day; year} as d : date) : date =
-  if year <= 0 then raise (Invalid_date "non-positive year")
-  else let check_leap = (if not (year mod 4 = 0) then false
-                    else if not (year mod 100 = 0) then true
-                    else if not (year mod 400 = 0) then false
-                    else true) in
+  if year < 0 then raise (Invalid_date "non-positive year")
+  else let check_leap = (year mod 4 = 0 && year mod 100 <> 0)
+                        || year mod 400 = 0 in
     let max_days =
       match month with
       | 1 | 3 | 5 | 7 | 8 | 10 | 12 -> 31
@@ -333,7 +333,7 @@ exception Family_Trouble of string ;;
 
 let marry (f : family) (p : person) : family =
   match f with
-  | Single x -> Family (p, x, [])
+  | Single x -> Family (x, p, [])
   | Family _ -> raise (Family_Trouble "can't add a spouse to a couple") ;;
 
 (*......................................................................
