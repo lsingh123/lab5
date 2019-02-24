@@ -145,7 +145,7 @@ exception Invalid_color of string ;;
 let validated_rgb (col : color) : color =
   let bad (x : int) : bool = x < 0 || x > 255 in
   match col with
-  | Simple color_label -> col
+  | Simple _ -> col
   | RGB (r, g, b) ->
     if bad r then raise (Invalid_color "bad red")
     else if bad g then raise (Invalid_color "bad green")
@@ -266,7 +266,7 @@ let validated_date ({month; day; year} as d : date) : date =
       | _ -> raise (Invalid_date "bad month") in
     if day > max_days then raise (Invalid_date "day too large")
     else if day < 1 then raise (Invalid_date "day too small")
-    else d ;; 
+    else d ;;
 
 
 (*======================================================================
@@ -331,7 +331,7 @@ is already made up of a married couple?
 
 exception Family_Trouble of string ;;
 
-let marry (p : person) (f : family) : family =
+let marry (f : family) (p : person) : family =
   match f with
   | Single x -> Family (p, x, [])
   | Family _ -> raise (Family_Trouble "can't add a spouse to a couple") ;;
