@@ -266,7 +266,7 @@ let validated_date ({month; day; year} as d : date) : date =
       | _ -> raise (Invalid_date "bad month") in
     if day > max_days then raise (Invalid_date "day too large")
     else if day < 1 then raise (Invalid_date "day too small")
-    else d ;; ;;
+    else d ;; 
 
 
 (*======================================================================
